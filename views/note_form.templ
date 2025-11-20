@@ -1,7 +1,8 @@
 package views
 
-templ NoteForm(action string, title string, body string) {
+templ NoteForm(action string, title string, body string, folderId string) {
     <form method="POST" action={ action }>
+        <input type="hidden" name="folder_id" value={ folderId } />
         <div class="note-content">
 
             <div class="note-header">

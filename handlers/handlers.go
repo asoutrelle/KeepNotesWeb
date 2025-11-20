@@ -41,7 +41,7 @@ func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Parse form
+	// Parse form values
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form", http.StatusBadRequest)
 		return
@@ -49,25 +49,49 @@ func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) 
 
 	title := r.FormValue("title")
 	body := r.FormValue("body")
+	folderIDStr := r.FormValue("folder_id") // <- se lee del form
 
-	// Guardar en SQLC
-	_, err := h.queries.CreateNote(r.Context(), sqlc.CreateNoteParams{
-		Title: title,
-		Body: sql.NullString{
-			String: body,
-			Valid:  body != "",
-		},
-		// Si tenés folder:
-		// FolderID: folderID,
-	})
+	folderID, err := strconv.Atoi(folderIDStr)
+
+	var note sqlc.CreateNoteParams
+
+	if err == nil {
+		// folderID es válido
+		note = sqlc.CreateNoteParams{
+			FolderID: sql.NullInt32{
+				Int32: int32(folderID),
+				Valid: true,
+			},
+			Title: title,
+			Body: sql.NullString{
+				String: body,
+				Valid:  body != "",
+			},
+		}
+	} else {
+		// folderID invalido → no asignar folder
+		note = sqlc.CreateNoteParams{
+			Title: title,
+			Body: sql.NullString{
+				String: body,
+				Valid:  body != "",
+			},
+		}
+	}
+
+	// Guardar nota usando SQLC
+	_, err = h.queries.CreateNote(r.Context(), note)
 
 	if err != nil {
 		http.Error(w, "DB Error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// PRG: Redirigir al listado
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	if folderIDStr != "" {
+		http.Redirect(w, r, "/folders/"+folderIDStr, http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
 }
 
 func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +161,7 @@ func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request
 	}
 
 	sidebar := views.FolderPage(folders)
-	body := views.NotesPage(notes)
+	body := views.NotesPage(notes, idStr)
 
 	views.Layout("NotesKeep", body, sidebar).Render(r.Context(), w)
 }

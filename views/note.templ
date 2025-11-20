@@ -3,7 +3,7 @@ package views
 
 import "keepnotesweb/db/sqlc"
 
-templ NoteList(notes []db.Note) {
+templ NoteList(notes []db.Note, folderId string) {
     <div class="cards-container">
         // Formulario para crear una nueva nota (igual estilo que las cards)
         <div class="note-card">
@@ -23,7 +23,7 @@ templ NoteList(notes []db.Note) {
     </div>
 }
 
-templ NotesPage(notes []db.Note) {
+templ NotesPage(notes []db.Note, folderId string) {
     <div>
         <div class="content-header">
             <h2 class="content-title">All Notes</h2>
@@ -31,7 +31,7 @@ templ NotesPage(notes []db.Note) {
 
         <div class="cards-container">
             <!-- Lista de notas (tarjetas) -->
-            @NoteList(notes)
+            @NoteList(notes, folderId)
 
         </div>
     </div>
