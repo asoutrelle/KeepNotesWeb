@@ -12,17 +12,23 @@ templ FolderList(folders []db.Folder) {
 
         @FolderForm("/folders", "", "")
 
-         <div class="folder-list">
-                    for _, folder := range folders {
-                        <a class="folder-item button" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
-                            <div class="folder-item-left">
-                                <span class="folder-icon">📁</span>
-                                <span>{ folder.Name }</span>
-                            </div>
-                            <span class="folder-count">0</span>
-                        </a>
-                    }
-                </div>
+        <div class="folder-list">
+            for _, folder := range folders {
+                <a class="folder-item button" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
+                    <div class="folder-item-left">
+                        <span class="folder-icon">📁</span>
+
+                        <div class="folder-text">
+                            <span class="folder-name">{ folder.Name }</span>
+
+                            if folder.Description.Valid && folder.Description.String != "" {
+                                <span class="folder-description">{ folder.Description.String }</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
 
     </div>
 }
@@ -31,9 +37,6 @@ templ FolderList(folders []db.Folder) {
 
 templ FolderPage(folders []db.Folder) {
     <div>
-        <div class="content-header">
-            <h2 class="content-title">Folders</h2>
-        </div>
         @FolderList(folders)
     </div>
 }

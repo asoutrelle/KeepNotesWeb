@@ -31,7 +31,7 @@ func (h *UserHandler) LayoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.Layout("NotesKeep", views.NotesPage(notes, ""), views.FolderPage(folders)).Render(r.Context(), w)
+	views.Layout("Home", views.NotesPage(notes, ""), views.FolderPage(folders)).Render(r.Context(), w)
 }
 
 func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -163,5 +163,17 @@ func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request
 	sidebar := views.FolderPage(folders)
 	body := views.NotesPage(notes, idStr)
 
-	views.Layout("NotesKeep", body, sidebar).Render(r.Context(), w)
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid folder ID", http.StatusBadRequest)
+		return
+	}
+
+	folder, err := h.queries.GetFolder(r.Context(), int32(id))
+	if err != nil {
+		http.Error(w, "Folder not found", http.StatusNotFound)
+		return
+	}
+
+	views.Layout(folder.Name, body, sidebar).Render(r.Context(), w)
 }
