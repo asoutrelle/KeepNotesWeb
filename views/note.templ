@@ -7,9 +7,8 @@ templ NoteList(notes []db.Note) {
     <div class="cards-container">
         // Formulario para crear una nueva nota (igual estilo que las cards)
         <div class="note-card">
-            @NoteForm("/notes","","")
+            @NoteForm("/notes","","", folderId)
         </div>
-
         // Todas las notas
         for _, n := range notes {
             <div class="note-card">
@@ -23,7 +22,6 @@ templ NoteList(notes []db.Note) {
         }
     </div>
 }
-
 
 templ NotesPage(notes []db.Note) {
     <div>

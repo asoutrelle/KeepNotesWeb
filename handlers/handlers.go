@@ -31,10 +31,11 @@ func (h *UserHandler) LayoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.Layout("NotesKeep", views.NotesPage(notes), views.FolderPage(folders)).Render(r.Context(), w)
+	views.Layout("NotesKeep", views.NotesPage(notes, ""), views.FolderPage(folders)).Render(r.Context(), w)
 }
 
 func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -84,7 +85,7 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 
-	_, err := h.queries.CreateFolder(r.Context(), sqlc.CreateFolderParams{
+	folder, err := h.queries.CreateFolder(r.Context(), sqlc.CreateFolderParams{
 		Name: name,
 		Description: sql.NullString{
 			String: description,
@@ -97,7 +98,8 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/folders/"+strconv.Itoa(int(folder.ID)), http.StatusSeeOther)
+
 }
 
 func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request) {
@@ -137,6 +139,5 @@ func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request
 	sidebar := views.FolderPage(folders)
 	body := views.NotesPage(notes)
 
-	views.Layout("Noteskeep", body, sidebar).Render(r.Context(), w)
-
+	views.Layout("NotesKeep", body, sidebar).Render(r.Context(), w)
 }
