@@ -292,6 +292,31 @@ body {
   border: none;
 }
 
+
+.folder-item.button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #141414; /* Más suave que #3a6df0 */
+    border: 1px solid #2a2a2a;
+
+    color: #e0e0e0;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.folder-item.button:hover {
+    background-color: #1f1f1f;
+    border-color: #3a3a3a;
+    transform: translateX(2px);
+}
+
+
 .save-btn {
   position: absolute;
   bottom: 12px;
