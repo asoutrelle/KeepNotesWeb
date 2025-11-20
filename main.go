@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	handlerDB "tpeweb.com/servidor-go/db/handlers"
-	sqlc "tpeweb.com/servidor-go/db/sqlc"
-	"tpeweb.com/servidor-go/handlers"
+	handlerDB "keepnotesweb/db/handlers"
+	sqlc "keepnotesweb/db/sqlc"
+	"keepnotesweb/handlers"
 )
 
 func main() {
@@ -23,13 +23,17 @@ func main() {
 	userHandler := handlers.NewUserHandler(queries)
 
 	http.Handle("/", fileServer)
-	http.HandleFunc("/api/notes", userHandler.NotesHandler)
-	http.HandleFunc("/api/notes/", userHandler.NoteHandler)
-	http.HandleFunc("/api/folders", userHandler.FoldersHandler)
-	http.HandleFunc("/api/folders/", userHandler.FolderHandler)
-	http.HandleFunc("/api/users", userHandler.UsersHandler)
-	http.HandleFunc("/api/users/", userHandler.SingleUserHandler)
-	http.HandleFunc("/api/login", userHandler.LoginHandler)
+	/*
+		http.HandleFunc("/api/notes", userHandler.NotesHandler)
+		http.HandleFunc("/api/notes/", userHandler.NoteHandler)
+		http.HandleFunc("/api/folders", userHandler.FoldersHandler)
+		http.HandleFunc("/api/folders/", userHandler.FolderHandler)
+		http.HandleFunc("/api/users", userHandler.UsersHandler)
+		http.HandleFunc("/api/users/", userHandler.SingleUserHandler)
+		http.HandleFunc("/api/login", userHandler.LoginHandler)*/
+	http.HandleFunc("/api/notes", userHandler.ListNotesHandler)
+	http.HandleFunc("/api/folders", userHandler.ListFoldersHandler)
+	http.HandleFunc("/api", userHandler.LayoutHandler)
 
 	fmt.Printf("Servidor ESTÁTICO escuchando en http://localhost%s\n", port)
 	err = http.ListenAndServe(port, nil)

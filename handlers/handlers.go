@@ -5,11 +5,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"keepnotesweb/views"
 	"log"
 	"net/http"
 	"strconv"
 
-	sqlc "tpeweb.com/servidor-go/db/sqlc"
+	sqlc "keepnotesweb/db/sqlc"
+
+	"github.com/a-h/templ"
 )
 
 type UserHandler struct {
@@ -652,4 +655,34 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func (h *UserHandler) ListFoldersHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	var folders, err = h.queries.ListFolders(ctx)
+	if err != nil {
+		http.Error(w, "Error al listar Folders", http.StatusInternalServerError)
+		return
+	}
+	templ.Handler(views.FolderPage(folders)).ServeHTTP(w, r)
+}
+
+func (h *UserHandler) ListNotesHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	var notes, err = h.queries.ListNotes(ctx)
+	if err != nil {
+		http.Error(w, "Error al listar Notes", http.StatusInternalServerError)
+		return
+	}
+	templ.Handler(views.NotesPage(notes)).ServeHTTP(w, r)
+}
+
+func (h *UserHandler) LayoutHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	var notes, err = h.queries.ListNotes(ctx)
+	if err != nil {
+		http.Error(w, "Error al listar Notes", http.StatusInternalServerError)
+		return
+	}
+	templ.Handler(views.Layout("NotesKeep", views.NotesPage(notes))).ServeHTTP(w, r)
 }

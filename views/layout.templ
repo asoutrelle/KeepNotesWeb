@@ -1,0 +1,51 @@
+package views
+
+templ Layout(title string, body templ.Component) {
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Folders</h2>
+                <button class="add-folder-btn">+</button>
+            </div>
+            <div class="folder-list">
+                <div class="folder-item">
+                    <div class="folder-item-left">
+                        <span class="folder-icon">📄</span>
+                        <span>All Notes</span>
+                    </div>
+                    <span class="folder-count">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <header class="header">
+                <div class="logo">+</div>
+                <h1 class="app-name">NotesKeep</h1>
+            </header>
+
+            <!-- Content (slot dinámico) -->
+            <div class="content">
+                @body
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>
+}

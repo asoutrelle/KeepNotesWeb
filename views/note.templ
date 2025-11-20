@@ -1,0 +1,21 @@
+package views
+
+
+import "keepnotesweb/db/sqlc"
+
+templ NoteList(notes []db.Note) {
+    <ul>
+        for _, note := range notes {
+            <li>{note.Title} - {note.ID}</li>
+        }
+    </ul>
+}
+
+templ NotesPage(notes []db.Note) {
+<html>
+    <body>
+        <h1>Lista de Notas</h1>
+            @NoteList(notes)
+        </body>
+    </html>
+}
