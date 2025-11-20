@@ -1,0 +1,27 @@
+package views
+
+templ NoteForm(action string, title string, body string) {
+    <form method="POST" action={ action }>
+        <div class="note-content">
+
+            <div class="note-header">
+                <input
+                    class="note-title"
+                    type="text"
+                    name="title"
+                    value = { title }
+                    placeholder="Título..."
+                    required
+                />
+            </div>
+
+            <textarea
+                class="note-body"
+                name="body"
+                placeholder="Escribe tu nota..."
+            >{ body }</textarea>
+
+            <button type="submit" class="save-btn">Guardar</button>
+        </div>
+    </form>
+}

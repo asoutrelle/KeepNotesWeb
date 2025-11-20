@@ -4,18 +4,37 @@ package views
 import "keepnotesweb/db/sqlc"
 
 templ NoteList(notes []db.Note) {
-    <ul>
-        for _, note := range notes {
-            <li>{note.Title} - {note.ID}</li>
+    <div class="cards-container">
+        // Formulario para crear una nueva nota (igual estilo que las cards)
+        <div class="note-card">
+            @NoteForm("/notes","","")
+        </div>
+
+        // Todas las notas
+        for _, n := range notes {
+            <div class="note-card">
+                <div class="note-content">
+                    <div class="note-header">
+                        <h3 class="note-title">{n.Title}</h3>
+                    </div>
+                    <p class="note-body">{n.Body.String}</p>
+                </div>
+            </div>
         }
-    </ul>
+    </div>
 }
 
+
 templ NotesPage(notes []db.Note) {
-<html>
-    <body>
-        <h1>Lista de Notas</h1>
+    <div>
+        <div class="content-header">
+            <h2 class="content-title">All Notes</h2>
+        </div>
+
+        <div class="cards-container">
+            <!-- Lista de notas (tarjetas) -->
             @NoteList(notes)
-        </body>
-    </html>
+
+        </div>
+    </div>
 }

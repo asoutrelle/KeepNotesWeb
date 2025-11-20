@@ -22,18 +22,10 @@ func main() {
 	queries := sqlc.New(conn)
 	userHandler := handlers.NewUserHandler(queries)
 
-	http.Handle("/", fileServer)
-	/*
-		http.HandleFunc("/api/notes", userHandler.NotesHandler)
-		http.HandleFunc("/api/notes/", userHandler.NoteHandler)
-		http.HandleFunc("/api/folders", userHandler.FoldersHandler)
-		http.HandleFunc("/api/folders/", userHandler.FolderHandler)
-		http.HandleFunc("/api/users", userHandler.UsersHandler)
-		http.HandleFunc("/api/users/", userHandler.SingleUserHandler)
-		http.HandleFunc("/api/login", userHandler.LoginHandler)*/
-	http.HandleFunc("/api/notes", userHandler.ListNotesHandler)
-	http.HandleFunc("/api/folders", userHandler.ListFoldersHandler)
-	http.HandleFunc("/api", userHandler.LayoutHandler)
+	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
+	http.HandleFunc("/", userHandler.LayoutHandler)
+	http.HandleFunc("/notes", userHandler.CreateNoteHandler)
+	http.HandleFunc("/folders", userHandler.CreateFolderHandler)
 
 	fmt.Printf("Servidor ESTÁTICO escuchando en http://localhost%s\n", port)
 	err = http.ListenAndServe(port, nil)

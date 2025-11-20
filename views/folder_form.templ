@@ -1,0 +1,26 @@
+package views
+
+templ FolderForm(action string, name string, description string) {
+    <form method="POST" action={ action } class="folder-form">
+        <div class="folder-form-fields">
+
+            <input
+                class="folder-input"
+                type="text"
+                name="name"
+                value={ name }
+                placeholder="Nombre de carpeta..."
+                required
+            />
+
+            <textarea
+                class="folder-textarea"
+                name="description"
+                placeholder="Descripción (opcional)..."
+            >{ description }</textarea>
+
+            <!-- BOTÓN + COMO SUBMIT -->
+            <button type="submit" class="folder-add-btn">+</button>
+        </div>
+    </form>
+}

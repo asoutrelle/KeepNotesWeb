@@ -2,19 +2,37 @@ package views
 
 
 import "keepnotesweb/db/sqlc"
+import "strconv"
+
 templ FolderList(folders []db.Folder) {
-    <ul>
-        for _, folder := range folders {
-            <li>{folder.Name} - {folder.ID}</li>
-        }
-    </ul>
+    <div>
+        <div class="sidebar-header">
+            <h2>Folders</h2>
+        </div>
+
+        @FolderForm("/folders", "", "")
+
+        <div class="folder-list">
+            for _, folder := range folders {
+                <a class="folder-item" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
+                    <div class="folder-item-left">
+                        <span class="folder-icon">📁</span>
+                        <span>{ folder.Name }</span>
+                    </div>
+                    <span class="folder-count">0</span>
+                </a>
+            }
+        </div>
+    </div>
 }
 
+
+
 templ FolderPage(folders []db.Folder) {
-<html>
-    <body>
-        <h1>Lista de Carpetas</h1>
-            @FolderList(folders)
-        </body>
-    </html>
+    <div>
+        <div class="content-header">
+            <h2 class="content-title">Folders</h2>
+        </div>
+        @FolderList(folders)
+    </div>
 }

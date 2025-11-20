@@ -158,14 +158,32 @@ body {
 }
 
 .take-note-button {
-  background: none;
-  border: none;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 250px;
+    max-width: 250px;
+    min-height: 150px;
+
+    /* Fondo y borde combinados */
+    background-color: #222;
+    border: 2px dashed #3a3a3a; /* del take-note */
+    border-radius: 8px;
+
+    /* Padding y texto */
+    padding: 16px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+
+    /* Interacción */
+    cursor: pointer;
+    transition: all 0.2s;
+
+    /* Layout adaptable */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Posición */
+    position: relative;
 }
 
 .take-note-card:hover {
@@ -316,4 +334,58 @@ body {
 
 .delete-note-btn:focus {
   outline: none;
+}
+
+/* --- Folder Form Styles --- */
+
+.folder-form {
+    padding: 12px;
+    border-bottom: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.folder-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.folder-input,
+.folder-textarea {
+    width: 100%;
+    background: #0e0e0e;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: #e0e0e0;
+    resize: none;
+}
+
+.folder-input {
+    font-size: 14px;
+}
+
+.folder-textarea {
+    min-height: 50px;
+    font-size: 12px;
+}
+
+/* Botón + estilo sidebar */
+.folder-add-btn {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 22px;
+    cursor: pointer;
+    width: 100%;
+    padding: 6px 0;
+    border-radius: 6px;
+    transition: background 0.2s;
+    border: 1px dashed #3a3a3a;
+}
+
+.folder-add-btn:hover {
+    background: #222;
 }
