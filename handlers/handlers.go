@@ -6,6 +6,8 @@ import (
 	sqlc "keepnotesweb/db/sqlc"
 	"keepnotesweb/views"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type UserHandler struct {
@@ -79,18 +81,15 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	title := r.FormValue("title")
-	body := r.FormValue("body")
+	name := r.FormValue("name")
+	description := r.FormValue("description")
 
-	// Guardar en SQLC
-	_, err := h.queries.CreateNote(r.Context(), sqlc.CreateNoteParams{
-		Title: title,
-		Body: sql.NullString{
-			String: body,
-			Valid:  body != "",
+	_, err := h.queries.CreateFolder(r.Context(), sqlc.CreateFolderParams{
+		Name: name,
+		Description: sql.NullString{
+			String: description,
+			Valid:  description != "",
 		},
-		// Si tenés folder:
-		// FolderID: folderID,
 	})
 
 	if err != nil {
@@ -98,6 +97,46 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// PRG: Redirigir al listado
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1] // "7"
+
+	// Convertir string → int
+	idInt, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid folder ID", http.StatusBadRequest)
+		return
+	}
+
+	n := sql.NullInt32{
+		Int32: int32(idInt),
+		Valid: true,
+	}
+
+	// Obtener todas las carpetas para el sidebar
+	folders, err := h.queries.ListFolders(r.Context())
+	if err != nil {
+		http.Error(w, "error cargando folders: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	notes, err := h.queries.GetNotesByFolder(r.Context(), n)
+	if err != nil {
+		http.Error(w, "Error fetching notes", http.StatusInternalServerError)
+		return
+	}
+
+	sidebar := views.FolderPage(folders)
+	body := views.NotesPage(notes)
+
+	views.Layout("Noteskeep", body, sidebar).Render(r.Context(), w)
+
 }

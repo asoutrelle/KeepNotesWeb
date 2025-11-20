@@ -176,6 +176,42 @@ func (q *Queries) GetNote(ctx context.Context, id int32) (Note, error) {
 	return i, err
 }
 
+const getNotesByFolder = `-- name: GetNotesByFolder :many
+SELECT id, folder_id, title, body, created_at, updated_at
+FROM note
+WHERE folder_id = $1
+`
+
+func (q *Queries) GetNotesByFolder(ctx context.Context, folderID sql.NullInt32) ([]Note, error) {
+	rows, err := q.db.QueryContext(ctx, getNotesByFolder, folderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.FolderID,
+			&i.Title,
+			&i.Body,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, username, email, password, created_at
 FROM users

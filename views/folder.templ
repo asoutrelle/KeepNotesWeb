@@ -12,17 +12,18 @@ templ FolderList(folders []db.Folder) {
 
         @FolderForm("/folders", "", "")
 
-        <div class="folder-list">
-            for _, folder := range folders {
-                <a class="folder-item" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
-                    <div class="folder-item-left">
-                        <span class="folder-icon">📁</span>
-                        <span>{ folder.Name }</span>
-                    </div>
-                    <span class="folder-count">0</span>
-                </a>
-            }
-        </div>
+         <div class="folder-list">
+                    for _, folder := range folders {
+                        <a class="folder-item" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
+                            <div class="folder-item-left">
+                                <span class="folder-icon">📁</span>
+                                <span>{ folder.Name }</span>
+                            </div>
+                            <span class="folder-count">0</span>
+                        </a>
+                    }
+                </div>
+
     </div>
 }
 

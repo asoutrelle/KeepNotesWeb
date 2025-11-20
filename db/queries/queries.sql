@@ -8,6 +8,11 @@ SELECT id, folder_id, title, body, created_at, updated_at
 FROM note
 WHERE id = $1;
 
+-- name: GetNotesByFolder :many
+SELECT id, folder_id, title, body, created_at, updated_at
+FROM note
+WHERE folder_id = $1;
+
 -- name: ListFolders :many
 SELECT id, user_id, name, description, parent_folder_id, created_at
 FROM folder
