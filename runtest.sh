@@ -1,26 +1,13 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+set -e
 
-BLUE='\033[1;34m'
-RED='\033[1;31m'
-NC='\033[0m'
+echo "Ejecutando sqlc generate..."
+go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate
 
-info() { echo -e "${BLUE}[INFO]${NC} $1"; }
-err()  { echo -e "${RED}[ERROR]${NC} $1"; }
+echo "Ejecutando templ generate..."
+go run github.com/a-h/templ/cmd/templ@latest generate
 
-COMPOSE_FILE="docker-compose.yml"
+echo "Levantando Docker..."
+docker compose up --build
 
-info "Levantando Docker Compose..."
-docker compose -f "$COMPOSE_FILE" up -d
-
-info "Ejecutando sqlc generate..."
-sqlc generate
-
-info "Ejecutando templ generate..."
-templ generate
-
-info "Compilando servidor..."
-go build -o bin/server ./cmd/server
-
-info "Iniciando servidor local..."
-./bin/server
+echo "Listo."
