@@ -1,7 +1,13 @@
 package views
 
 templ NoteForm(action string, title string, body string, folderId string) {
-    <form method="POST" action={ action }>
+    <form 
+        method="POST" 
+        action={ templ.SafeURL(action) }
+        hx-post={ action }
+        hx-target="#notes-list"
+        hx-swap="outerHTML"
+    >
         <input type="hidden" name="folder_id" value={ folderId } />
         <div class="note-content">
 
