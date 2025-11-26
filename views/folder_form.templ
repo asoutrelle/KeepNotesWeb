@@ -1,7 +1,14 @@
 package views
 
 templ FolderForm(action string, name string, description string) {
-    <form method="POST" action={ action } class="folder-form">
+    <form 
+        method="POST" 
+        action={ templ.SafeURL(action) } 
+        class="folder-form"
+        hx-post={ action }
+        hx-target="#folder-list"
+        hx-swap="outerHTML"
+    >
         <div class="folder-form-fields">
 
             <input
