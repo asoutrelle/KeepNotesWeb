@@ -31,7 +31,7 @@ func (h *UserHandler) LayoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.Layout("Home", views.NotesPage(notes, ""), views.FolderPage(folders)).Render(r.Context(), w)
+	views.Layout("KeepNotes", views.NotesPage(notes, ""), views.FolderPage(folders)).Render(r.Context(), w)
 }
 
 func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +128,7 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 	name := r.FormValue("name")
 	description := r.FormValue("description")
 
-	folder, err := h.queries.CreateFolder(r.Context(), sqlc.CreateFolderParams{
+	_, err := h.queries.CreateFolder(r.Context(), sqlc.CreateFolderParams{
 		Name: name,
 		Description: sql.NullString{
 			String: description,
@@ -141,8 +141,53 @@ func (h *UserHandler) CreateFolderHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	http.Redirect(w, r, "/folders/"+strconv.Itoa(int(folder.ID)), http.StatusSeeOther)
+	// HTMX: Detectar si es request AJAX
+	if r.Header.Get("HX-Request") == "true" {
+		// Obtener folders actualizados
+		folders, _ := h.queries.ListFolders(r.Context())
+		// Renderizar SOLO el componente FolderList
+		views.FolderList(folders).Render(r.Context(), w)
+		return
+	}
 
+	// Fallback para navegadores sin JavaScript
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// Handler para obtener solo las notas de un folder (HTMX)
+func (h *UserHandler) GetNotesByFolderHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// URL: /folders/{id}/notes
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+	idStr := parts[2] // El ID está en la posición 2
+
+	idInt, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid folder ID", http.StatusBadRequest)
+		return
+	}
+
+	n := sql.NullInt32{
+		Int32: int32(idInt),
+		Valid: true,
+	}
+
+	notes, err := h.queries.GetNotesByFolder(r.Context(), n)
+	if err != nil {
+		http.Error(w, "Error fetching notes", http.StatusInternalServerError)
+		return
+	}
+
+	// Renderizar solo la lista de notas
+	views.NoteList(notes, idStr).Render(r.Context(), w)
 }
 
 func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request) {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	handlerDB "keepnotesweb/db/handlers"
 	sqlc "keepnotesweb/db/sqlc"
@@ -26,7 +27,15 @@ func main() {
 	http.HandleFunc("/", userHandler.LayoutHandler)
 	http.HandleFunc("/notes", userHandler.CreateNoteHandler)
 	http.HandleFunc("/folders", userHandler.CreateFolderHandler)
-	http.HandleFunc("/folders/", userHandler.ListNotesByFolderID)
+	http.HandleFunc("/folders/", func(w http.ResponseWriter, r *http.Request) {
+		// Detectar si es ruta /folders/{id}/notes para HTMX
+		if strings.HasSuffix(r.URL.Path, "/notes") {
+			userHandler.GetNotesByFolderHandler(w, r)
+			return
+		}
+		// Ruta normal /folders/{id}
+		userHandler.ListNotesByFolderID(w, r)
+	})
 
 	fmt.Printf("Servidor ESTÁTICO escuchando en http://localhost%s\n", port)
 	err = http.ListenAndServe(port, nil)

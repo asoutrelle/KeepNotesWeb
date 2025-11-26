@@ -5,7 +5,7 @@ import "keepnotesweb/db/sqlc"
 import "strconv"
 
 templ FolderList(folders []db.Folder) {
-    <div>
+    <div id="folder-list">
         <div class="sidebar-header">
             <h2>Folders</h2>
         </div>
@@ -14,7 +14,14 @@ templ FolderList(folders []db.Folder) {
 
         <div class="folder-list">
             for _, folder := range folders {
-                <a class="folder-item button" href={"/folders/" + strconv.Itoa(int(folder.ID))}>
+                <a 
+                    class="folder-item button" 
+                    href={ templ.SafeURL("/folders/" + strconv.Itoa(int(folder.ID))) }
+                    hx-get={ "/folders/" + strconv.Itoa(int(folder.ID)) + "/notes" }
+                    hx-target="#notes-list"
+                    hx-swap="outerHTML"
+                    hx-push-url={ "/folders/" + strconv.Itoa(int(folder.ID)) }
+                >
                     <div class="folder-item-left">
                         <span class="folder-icon">📁</span>
 
