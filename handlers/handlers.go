@@ -87,6 +87,25 @@ func (h *UserHandler) CreateNoteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// HTMX: Detectar si es request AJAX
+	if r.Header.Get("HX-Request") == "true" {
+		// Obtener notas actualizadas
+		var notes []sqlc.Note
+		if folderIDStr != "" && folderID > 0 {
+			n := sql.NullInt32{
+				Int32: int32(folderID),
+				Valid: true,
+			}
+			notes, _ = h.queries.GetNotesByFolder(r.Context(), n)
+		} else {
+			notes, _ = h.queries.ListNotes(r.Context())
+		}
+		// Renderizar SOLO el componente NoteList
+		views.NoteList(notes, folderIDStr).Render(r.Context(), w)
+		return
+	}
+
+	// Fallback para navegadores sin JavaScript
 	if folderIDStr != "" {
 		http.Redirect(w, r, "/folders/"+folderIDStr, http.StatusSeeOther)
 	} else {

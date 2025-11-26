@@ -10,4 +10,4 @@ go run github.com/a-h/templ/cmd/templ@latest generate
 echo "Levantando Docker..."
 docker compose up --build
 
-echo "Listo."
+echo "Contendedor terminado. Prueba finalizada."

@@ -4,7 +4,7 @@ package views
 import "keepnotesweb/db/sqlc"
 
 templ NoteList(notes []db.Note, folderId string) {
-    <div class="cards-container">
+    <div class="cards-container" id="notes-list">
         <div class="note-card">
             @NoteForm("/notes","","", folderId)
         </div>
