@@ -2,6 +2,7 @@ package views
 
 
 import "keepnotesweb/db/sqlc"
+import "strconv"
 
 templ NoteList(notes []db.Note, folderId string) {
     <div class="cards-container" id="notes-list">
