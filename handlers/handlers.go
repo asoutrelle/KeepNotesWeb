@@ -241,3 +241,26 @@ func (h *UserHandler) ListNotesByFolderID(w http.ResponseWriter, r *http.Request
 
 	views.Layout(folder.Name, body, sidebar).Render(r.Context(), w)
 }
+func (h *UserHandler) DeleteNoteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	idInt, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(w, "Invalid Note ID", http.StatusBadRequest)
+		return
+	}
+
+	err = h.queries.DeleteNote(r.Context(), int32(idInt))
+
+	if err != nil {
+		http.Error(w, "Note not found", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
