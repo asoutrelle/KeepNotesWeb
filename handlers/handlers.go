@@ -262,5 +262,38 @@ func (h *UserHandler) DeleteNoteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	notes, err := h.queries.ListNotes(r.Context())
+	if err != nil {
+		return
+	}
+	w.Header().Set("X-Debug", "elimine la note "+idStr+"  quedan: "+strconv.Itoa(len(notes)))
+	w.WriteHeader(http.StatusOK)
+}
+func (h *UserHandler) DeleteFolderHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	idInt, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		http.Error(w, "Invalid Folder ID", http.StatusBadRequest)
+		return
+	}
+
+	err = h.queries.DeleteFolder(r.Context(), int32(idInt))
+
+	if err != nil {
+		http.Error(w, "Folder not found", http.StatusNotFound)
+		return
+	}
+
+	folders, err := h.queries.ListFolders(r.Context())
+	if err != nil {
+		return
+	}
+	w.Header().Set("X-Debug", "elimine la folder "+idStr+"  quedan: "+strconv.Itoa(len(folders)))
 	w.WriteHeader(http.StatusOK)
 }

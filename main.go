@@ -35,7 +35,14 @@ func main() {
 			return
 		}
 		// Ruta normal /folders/{id}
-		userHandler.ListNotesByFolderID(w, r)
+		switch r.Method {
+		case http.MethodDelete:
+			userHandler.DeleteFolderHandler(w, r)
+		case http.MethodGet:
+			userHandler.ListNotesByFolderID(w, r)
+		default:
+			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		}
 	})
 
 	fmt.Printf("Servidor ESTÁTICO escuchando en http://localhost%s\n", port)
