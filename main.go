@@ -26,6 +26,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
 	http.HandleFunc("/", userHandler.LayoutHandler)
 	http.HandleFunc("/notes", userHandler.CreateNoteHandler)
+	http.HandleFunc("/notes/", userHandler.DeleteNoteHandler)
 	http.HandleFunc("/folders", userHandler.CreateFolderHandler)
 	http.HandleFunc("/folders/", func(w http.ResponseWriter, r *http.Request) {
 		// Detectar si es ruta /folders/{id}/notes para HTMX
