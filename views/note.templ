@@ -14,6 +14,13 @@ templ NoteList(notes []db.Note, folderId string) {
                 <div class="note-content">
                     <div class="note-header">
                         <h3 class="note-title">{n.Title}</h3>
+                        <button class="delete-note-btn"
+                            hx-delete={ "/notes/" + strconv.Itoa(int(n.ID)) }
+                            hx-target="closest .note-card"
+                            hx-swap="outerHTML"
+                            type="button">
+                        ×
+                        </button>
                     </div>
                     <p class="note-body">{n.Body.String}</p>
                 </div>
